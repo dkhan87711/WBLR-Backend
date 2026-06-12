@@ -2,7 +2,7 @@ const citizenService =
     require("../services/citizen.service");
 
 /**
- * Citizen Registration
+ * Citizen Registration Service
  */
 const register = async (
     req,
