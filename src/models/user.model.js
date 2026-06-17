@@ -26,10 +26,10 @@ const User = sequelize.define(
             field: "user_name"
         },
 
-        userTypeName: {
-            type: DataTypes.STRING(50),
-            field: "user_type_name"
-        },
+        // userTypeName: {
+        //     type: DataTypes.STRING(50),
+        //     field: "user_type_name"
+        // },
 
         userTypeId: {
             type: DataTypes.INTEGER,

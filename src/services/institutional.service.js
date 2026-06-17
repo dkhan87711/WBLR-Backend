@@ -1,9 +1,14 @@
-const userRepository = require("../repositories/user.repository");
+const userRepository =
+    require("../repositories/user.repository");
+
+const userSessionRepository =
+    require("../repositories/userSession.repository");
 
 const login = async (
     userName,
     email,
-    password
+    password,
+    loginType
 ) => {
 
     const user =
@@ -13,7 +18,9 @@ const login = async (
         );
 
     if (!user) {
-        throw new Error("User not found");
+        throw new Error(
+            "User not found"
+        );
     }
 
     if (user.userTypeId !== 2) {
@@ -28,17 +35,49 @@ const login = async (
         );
     }
 
+    const session =
+        await userSessionRepository.createSession({
+            userId: user.userId,
+            loginType
+        });
+
     return {
+        sessionId: session.sessionId,
+
         userId: user.userId,
         userName: user.userName,
         firstName: user.firstName,
         lastName: user.lastName,
         userTypeId: user.userTypeId,
-        userTypeName: user.userTypeName,
         email: user.email
     };
 };
 
+const logout = async (
+    sessionId
+) => {
+
+    const session =
+        await userSessionRepository.logoutSession(
+            sessionId
+        );
+
+    if (!session) {
+        throw new Error(
+            "Session not found"
+        );
+    }
+
+    return {
+        sessionId:
+            session.sessionId,
+        message:
+            "Logout successful"
+    };
+
+};
+
 module.exports = {
-    login
+    login,
+    logout
 };

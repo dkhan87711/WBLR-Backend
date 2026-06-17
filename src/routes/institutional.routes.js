@@ -1,4 +1,5 @@
 const router = require("express").Router();
+
 const controller =
     require("../controllers/institutional.controller");
 
@@ -31,6 +32,9 @@ const controller =
  *               password:
  *                 type: string
  *                 example: "12345"
+ *               loginType:
+ *                 type: string
+ *                 example: "WEB"
  *     responses:
  *       200:
  *         description: Login Successful
@@ -38,6 +42,31 @@ const controller =
 router.post(
     "/login",
     controller.login
+);
+
+/**
+ * @swagger
+ * /api/institutional/logout:
+ *   post:
+ *     summary: Institutional Logout
+ *     tags: [Institutional]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               sessionId:
+ *                 type: integer
+ *                 example: 4
+ *     responses:
+ *       200:
+ *         description: Logout Successful
+ */
+router.post(
+    "/logout",
+    controller.logout
 );
 
 module.exports = router;
