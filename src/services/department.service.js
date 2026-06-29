@@ -41,15 +41,14 @@ const login = async (
             loginType
         });
 
+    const userDetails =
+        await userRepository.findUserWithDetails(
+            user.userId
+        );
+
     return {
         sessionId: session.sessionId,
-
-        userId: user.userId,
-        userName: user.userName,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        userTypeId: user.userTypeId,
-        email: user.email
+        user: userDetails
     };
 };
 
@@ -74,7 +73,6 @@ const logout = async (
         message:
             "Logout successful"
     };
-
 };
 
 module.exports = {
