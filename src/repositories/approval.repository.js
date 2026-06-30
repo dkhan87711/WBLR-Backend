@@ -239,5 +239,4 @@ module.exports = {
     getTxnById,
     fetchRequestsByRole,
     fetchOriginalGeometry,
-
 };
