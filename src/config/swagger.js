@@ -10,16 +10,17 @@ const options = {
         },
         servers: [
             {
-                url: "http://localhost:4000"
+                url: "http://localhost:5000" // ✅ IMPORTANT FIX
             }
         ]
     },
+
+    // ✅ Ensure correct path
     apis: [
         "./src/routes/*.js"
     ]
 };
 
-const swaggerSpec =
-    swaggerJsdoc(options);
+const swaggerSpec = swaggerJsdoc(options);
 
 module.exports = swaggerSpec;

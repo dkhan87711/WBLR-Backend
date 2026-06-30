@@ -15,4 +15,8 @@ router.use(
     require("./citizen.routes")
 );
 
+router.use(
+    "/approval",
+    require("./approval.routes"));
+
 module.exports = router;
