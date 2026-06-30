@@ -124,10 +124,120 @@ const updateTxnStatus = async (txnId, status) => {
     );
 };
 
+const getTxnById = async (txnId) => {
+    const [rows] = await db.query(
+        `SELECT txn_id, status FROM public.land_txn_request WHERE txn_id = :txnId LIMIT 1`,
+        { replacements: { txnId } }
+    );
+    return rows[0];
+};
+
+const fetchRequestsByRole = async () => {
+
+    const query = `
+        SELECT 
+            txn_id,
+            MIN(txn_type) AS txn_type,
+            STRING_AGG(DISTINCT old_val, ',') AS plot_no,
+            STRING_AGG(DISTINCT new_plot_no, ',') AS new_plot_no,
+            MIN(owner_name) AS owner_name,
+            MIN(created_by) AS requested_by,
+            MIN(created_date) AS requested_date,
+            MIN(mouza) AS mouza,
+            ROUND(SUM(ror_area)::NUMERIC, 4) AS ror_area,
+            ROUND(SUM(gis_area)::NUMERIC, 4) AS gis_area,
+            MIN(status) AS status
+        FROM (
+            SELECT 
+                txn_id,
+                txn_type,
+                new_plot_no,
+                owner_name,
+                created_by,
+                created_date,
+                ror_area,
+                gis_area,
+                mouza,
+                status,
+                unnest(string_to_array(old_plot_no, ',')) AS old_val
+            FROM public.land_txn_request
+        ) t
+        GROUP BY txn_id
+        ORDER BY txn_id DESC
+    `;
+
+    const [rows] = await db.query(query);
+    return rows;
+};
+
+const fetchOriginalGeometry = async (txnId) => {
+
+    const [rows] = await db.query(
+        `
+        SELECT DISTINCT old_plot_no
+        FROM public.land_txn_request
+        WHERE txn_id = :txnId
+        `,
+        { replacements: { txnId } }
+    );
+
+    if (!rows.length) return [];
+
+    let plotNumbers = [];
+
+    rows.forEach(r => {
+
+        if (!r.old_plot_no) return;
+
+        const val = r.old_plot_no.toString();
+
+        // ✅ SPLIT CASE
+        if (val.includes(",")) {
+            plotNumbers.push(...val.split(",").map(p => parseInt(p)));
+        }
+
+        // ✅ MERGE CASE
+        else if (val.length > 3) {
+            const parts = val.match(/.{1,3}/g);
+            plotNumbers.push(...parts.map(p => parseInt(p)));
+        }
+
+        // ✅ NORMAL
+        else {
+            plotNumbers.push(parseInt(val));
+        }
+    });
+
+    plotNumbers = [...new Set(plotNumbers)];
+
+    console.log("Final Plot Numbers:", plotNumbers);
+
+    if (!plotNumbers.length) return [];
+
+    const [geomRows] = await db.query(
+        `
+        SELECT 
+            plot_no, 
+            ST_AsGeoJSON(shape) AS geometry
+        FROM public.rajarhat_plot_v2
+        WHERE plot_no IN (:plotNumbers)   -- ✅ FIXED
+        `,
+        {
+            replacements: { plotNumbers }
+        }
+    );
+
+    return geomRows;
+};
+
 
 module.exports = {
     fetchPendingRequests,
     fetchRequestDetails,
     insertApproval,
-    updateTxnStatus
+    updateTxnStatus,
+    getTxnById,
+    fetchRequestsByRole,
+    fetchOriginalGeometry,
+
 };

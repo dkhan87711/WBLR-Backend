@@ -2,17 +2,14 @@ const approvalService = require("../services/approval.service");
 
 const getRequests = async (req, res) => {
     try {
-        const data = await approvalService.getRequests();
+        const role = req.query.role;
 
-        res.status(200).json({
-            success: true,
-            data
-        });
+        const data = await approvalService.getRequests(role);
+
+        res.status(200).json({ success: true, data });
+
     } catch (err) {
-        res.status(400).json({
-            success: false,
-            message: err.message
-        });
+        res.status(400).json({ success: false, message: err.message });
     }
 };
 
@@ -37,27 +34,35 @@ const getRequestDetails = async (req, res) => {
 
 const takeAction = async (req, res) => {
     try {
-        const { txnId, role, status, remarks, userId } = req.body;
+        const { txnId, role, status, remarks } = req.body;
 
         const data = await approvalService.takeAction(
-            txnId, role, status, remarks, userId
+            txnId, role, status, remarks
         );
 
-        res.status(200).json({
-            success: true,
-            data
-        });
+        res.status(200).json({ success: true, data });
 
     } catch (err) {
-        res.status(400).json({
-            success: false,
-            message: err.message
-        });
+        res.status(400).json({ success: false, message: err.message });
+    }
+};
+
+const sendForApproval = async (req, res) => {
+    try {
+        const { txnId } = req.body;
+
+        const data = await approvalService.sendForApproval(txnId);
+
+        res.status(200).json({ success: true, data });
+
+    } catch (err) {
+        res.status(400).json({ success: false, message: err.message });
     }
 };
 
 module.exports = {
     getRequests,
     getRequestDetails,
-    takeAction
+    takeAction,
+    sendForApproval
 };
