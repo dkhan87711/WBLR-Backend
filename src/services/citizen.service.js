@@ -83,10 +83,13 @@ const sendOtp = async (phoneNo) => {
  * 3. If not exists, auto-register
  * 4. Return citizen details
  */
+
 const citizenOtpLogin = async (
     phoneNo,
-    otp
+    otp,
+    userName
 ) => {
+
 
     if (!phoneNo) {
         throw new Error(
@@ -149,7 +152,11 @@ const citizenOtpLogin = async (
             "NEW_USER";
 
         user =
+            user =
             await userRepository.createUser({
+                userName:
+                    userName ||
+                    `CITIZEN_${loginPhoneNo}`,
                 phoneNo: loginPhoneNo,
                 userTypeId: 3,
                 userTypeName: "Citizen"

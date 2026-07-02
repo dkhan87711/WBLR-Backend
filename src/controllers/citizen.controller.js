@@ -81,13 +81,15 @@ const citizenOtpLogin = async (
 
         const {
             phoneNo,
-            otp
+            otp,
+            user_name
         } = req.body;
 
         const result =
             await citizenService.citizenOtpLogin(
                 phoneNo,
-                otp
+                otp,
+                user_name
             );
 
         return res.status(200).json({
