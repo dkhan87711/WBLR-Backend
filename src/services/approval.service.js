@@ -87,10 +87,14 @@ const sendForApproval = async (txnId) => {
     return { message: "Sent for approval" };
 };
 
+const importGeoJson = async (features) => {
+    return await approvalRepo.importGeoJson(features);
+};
 
 module.exports = {
     getRequests,
     getRequestDetails,
     takeAction,
-    sendForApproval
+    sendForApproval,
+    importGeoJson
 };

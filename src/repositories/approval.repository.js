@@ -52,7 +52,6 @@ const fetchPendingRequests = async () => {
     return rows || [];
 };
 
-
 // ✅ FETCH DETAILS (full transaction rows)
 const fetchRequestDetails = async (txnId) => {
 
@@ -86,7 +85,6 @@ const fetchRequestDetails = async (txnId) => {
     };
 };
 
-
 // ✅ INSERT APPROVAL ENTRY
 const insertApproval = async ({
     txnId,
@@ -107,7 +105,6 @@ const insertApproval = async ({
         }
     );
 };
-
 
 // ✅ UPDATE TRANSACTION STATUS
 const updateTxnStatus = async (txnId, status) => {
@@ -230,6 +227,102 @@ const fetchOriginalGeometry = async (txnId) => {
     return geomRows;
 };
 
+const importGeoJson = async (features) => {
+
+    let inserted = 0;
+
+    for (const feature of features) {
+
+        const p = feature.properties;
+
+        const [result] = await db.query(
+            `
+            INSERT INTO public.land_txn_request(
+                id,
+                txn_id,
+                txn_type,
+                old_plot_no,
+                new_plot_no,
+                shape,
+                owner_name,
+                father_name,
+                address,
+                khatian_no,
+                landuse,
+                total_area,
+                shared_area,
+                created_by,
+                created_date,
+                ror_area,
+                gis_area,
+                mouza,
+                status
+            )
+            VALUES (
+                :id,
+                :txn_id,
+                :txn_type,
+                :old_plot_no,
+                :new_plot_no,
+                ST_SetSRID(ST_GeomFromGeoJSON(:geometry),4326),
+                :owner_name,
+                :father_name,
+                :address,
+                :khatian_no,
+                :landuse,
+                :total_area,
+                :shared_area,
+                :created_by,
+                :created_date,
+                :ror_area,
+                :gis_area,
+                :mouza,
+                :status
+            )
+            ON CONFLICT (id) DO NOTHING
+            RETURNING id
+            `,
+            {
+                replacements: {
+                    id: p.id,
+                    txn_id: p.txn_id,
+                    txn_type: p.txn_type,
+                    old_plot_no: p.old_plot_no,
+                    new_plot_no: p.new_plot_no,
+                    geometry: JSON.stringify(feature.geometry),
+                    owner_name: p.owner_name,
+                    father_name: p.father_name,
+                    address: p.address,
+                    khatian_no: p.khatian_no,
+                    landuse: p.landuse,
+                    total_area: p.total_area,
+                    shared_area: p.shared_area,
+                    created_by: p.created_by,
+                    created_date: p.created_date,
+                    ror_area: p.ror_area,
+                    gis_area: p.gis_area,
+                    mouza: p.mouza,
+                    status: p.status
+                }
+            }
+        );
+
+        if (result?.length) {
+            inserted++;
+        }
+    }
+
+    return {
+        imported: inserted > 0,
+        inserted,
+        skipped: features.length - inserted,
+        message:
+            inserted > 0
+                ? `${inserted} records imported, ${features.length - inserted} skipped`
+                : "All records already exist"
+    };
+};
+
 
 module.exports = {
     fetchPendingRequests,
@@ -239,4 +332,5 @@ module.exports = {
     getTxnById,
     fetchRequestsByRole,
     fetchOriginalGeometry,
+    importGeoJson
 };

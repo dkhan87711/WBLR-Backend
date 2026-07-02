@@ -60,9 +60,28 @@ const sendForApproval = async (req, res) => {
     }
 };
 
+const importGeoJson = async (req, res) => {
+    try {
+        const { features } = req.body;
+
+        const data = await approvalService.importGeoJson(features);
+
+        res.status(200).json({
+            success: true,
+            data
+        });
+    } catch (err) {
+        res.status(400).json({
+            success: false,
+            message: err.message
+        });
+    }
+};
+
 module.exports = {
     getRequests,
     getRequestDetails,
     takeAction,
-    sendForApproval
+    sendForApproval,
+    importGeoJson
 };

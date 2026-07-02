@@ -143,4 +143,52 @@ router.post("/action", controller.takeAction);
 router.post("/submit", controller.sendForApproval);
 
 
+/**
+ * @swagger
+ * /api/approval/import-geojson:
+ *   post:
+ *     summary: Import transaction GeoJSON data into land_txn_request
+ *     tags: [Approval]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - features
+ *             properties:
+ *               features:
+ *                 type: array
+ *                 description: GeoJSON FeatureCollection features
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     type:
+ *                       type: string
+ *                       example: Feature
+ *                     properties:
+ *                       type: object
+ *                     geometry:
+ *                       type: object
+ *     responses:
+ *       200:
+ *         description: GeoJSON imported successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: true
+ *               data:
+ *                 message: 10 records imported successfully
+ *       400:
+ *         description: Validation or import error
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: false
+ *               message: Invalid GeoJSON data
+ */
+router.post("/import-geojson", controller.importGeoJson);
+
+
 module.exports = router;
