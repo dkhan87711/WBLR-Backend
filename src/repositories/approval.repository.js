@@ -323,6 +323,29 @@ const importGeoJson = async (features) => {
     };
 };
 
+const getApprovedTxnGeometry = async (txnId) => {
+
+    console.log("fetching txn from db");
+
+    const [rows] = await db.query(
+        `
+        SELECT
+            txn_id,
+            old_plot_no,
+            new_plot_no,
+            mouza,
+            owner_name,
+            ST_AsGeoJSON(shape) AS geometry
+        FROM public.land_txn_request
+        WHERE txn_id = :txnId
+        `,
+        {
+            replacements: { txnId }
+        }
+    );
+
+    return rows || [];
+};
 
 module.exports = {
     fetchPendingRequests,
@@ -332,5 +355,7 @@ module.exports = {
     getTxnById,
     fetchRequestsByRole,
     fetchOriginalGeometry,
-    importGeoJson
+    importGeoJson,
+    getApprovedTxnGeometry
+
 };

@@ -1,9 +1,11 @@
 require("dotenv").config();
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 const sequelize = require("./config/database");
 const app = require("./app");
 
-const PORT = process.env.PORT || 5000;
+
+const PORT = process.env.PORT || 5008;
 
 (async () => {
     try {
