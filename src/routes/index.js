@@ -19,4 +19,8 @@ router.use(
     "/approval",
     require("./approval.routes"));
 
+router.use(
+    "/digipin",
+    require("./digipin.routes"));
+
 module.exports = router;
