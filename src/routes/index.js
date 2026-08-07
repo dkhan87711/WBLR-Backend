@@ -23,4 +23,8 @@ router.use(
     "/digipin",
     require("./digipin.routes"));
 
+router.use(
+    '/ulpin',
+    require('./ulpin.routes'));
+
 module.exports = router;
