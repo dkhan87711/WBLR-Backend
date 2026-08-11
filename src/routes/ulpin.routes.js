@@ -1,6 +1,7 @@
 const router = require('express').Router();
 
 const ulpinController = require('../controllers/ulpin.controller');
+const ulpinDecodeController = require('../controllers/reverse_ulpin.controller')
 
 /**
  * @swagger
@@ -38,6 +39,38 @@ const ulpinController = require('../controllers/ulpin.controller');
  *     responses:
  *       200:
  *         description: ULPIN generated successfully
+ *       400:
+ *         description: Invalid geometry supplied
+ *       500:
+ *         description: Internal Server Error
+ */
+router.post(
+    '/generate',
+    ulpinController.generateUlpin
+);
+
+/**
+ * @swagger
+ * /api/ulpin/decode:
+ *   post:
+ *     summary: Decode ULPIN/eNLI into Latitude, Longitude and Floor
+ *     tags: [ULPIN]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - ulpin
+ *             properties:
+ *               ulpin:
+ *                 type: string
+ *                 example: "80HZHP-E2DG37-H0"
+ *                 description: ULPIN/eNLI code
+ *     responses:
+ *       200:
+ *         description: ULPIN decoded successfully
  *         content:
  *           application/json:
  *             schema:
@@ -49,26 +82,23 @@ const ulpinController = require('../controllers/ulpin.controller');
  *                 data:
  *                   type: object
  *                   properties:
- *                     ulpin:
- *                       type: string
- *                       example: "03C2P50A0YR3W0"
  *                     latitude:
  *                       type: number
- *                       example: 12.9717
+ *                       example: 22.568569
  *                     longitude:
  *                       type: number
- *                       example: 77.5947
+ *                       example: 88.432103
  *                     floor:
  *                       type: number
  *                       example: 0
  *       400:
- *         description: Invalid geometry supplied
+ *         description: Invalid ULPIN supplied
  *       500:
  *         description: Internal Server Error
  */
 router.post(
-    '/generate',
-    ulpinController.generateUlpin
+    '/decode',
+    ulpinDecodeController.decodeUlpin
 );
 
 module.exports = router;
