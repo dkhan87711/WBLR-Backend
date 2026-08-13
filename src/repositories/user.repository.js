@@ -5,7 +5,6 @@ const sequelize = require("../config/database");
 /* =====================================================
    CREATE USER
 ===================================================== */
-
 const createUser = async (payload) => {
     return await User.create(payload);
 };
@@ -13,7 +12,6 @@ const createUser = async (payload) => {
 /* =====================================================
    LOGIN LOOKUP
 ===================================================== */
-
 const findByUserNameOrEmail = async (
     userName,
     email
@@ -48,7 +46,6 @@ const findByUserNameOrEmail = async (
 /* =====================================================
    USER DETAILS WITH ROLE + PERMISSIONS
 ===================================================== */
-
 const findUserWithDetails = async (
     userId
 ) => {
@@ -177,7 +174,6 @@ const findUserWithDetails = async (
 /* =====================================================
    EXISTING USER CHECK
 ===================================================== */
-
 const findExistingUser = async (
     userName,
     email,
@@ -219,7 +215,6 @@ const findExistingUser = async (
 /* =====================================================
    PHONE SEARCH
 ===================================================== */
-
 const findByPhoneNo = async (
     phoneNo
 ) => {
@@ -235,7 +230,6 @@ const findByPhoneNo = async (
 /* =====================================================
    USER BY ID
 ===================================================== */
-
 const findByUserId = async (
     userId
 ) => {
@@ -249,7 +243,6 @@ const findByUserId = async (
 /* =====================================================
    UPDATE USER
 ===================================================== */
-
 const updateUser = async (
     userId,
     payload
@@ -273,7 +266,6 @@ const updateUser = async (
 /* =====================================================
    DELETE USER
 ===================================================== */
-
 const deleteUser = async (
     userId
 ) => {

@@ -5,7 +5,6 @@ const otpService = require("./otp.service");
  * Citizen Registration
  */
 const register = async (payload) => {
-
     const existingUser =
         await userRepository.findExistingUser(
             payload.userName,
@@ -14,7 +13,6 @@ const register = async (payload) => {
         );
 
     if (existingUser) {
-
         if (
             payload.userName &&
             existingUser.userName === payload.userName
@@ -41,7 +39,6 @@ const register = async (payload) => {
                 "Phone number already exists"
             );
         }
-
     }
 
     return await userRepository.createUser({
@@ -49,7 +46,6 @@ const register = async (payload) => {
         userTypeId: 3,
         userTypeName: "Citizen"
     });
-
 };
 
 
@@ -57,7 +53,6 @@ const register = async (payload) => {
  * Send OTP
  */
 const sendOtp = async (phoneNo) => {
-
     if (!phoneNo) {
         throw new Error(
             "Phone number is required"
@@ -65,12 +60,10 @@ const sendOtp = async (phoneNo) => {
     }
 
     await otpService.sendOtp(phoneNo);
-
     return {
         message:
             "OTP sent successfully"
     };
-
 };
 
 
@@ -89,8 +82,6 @@ const citizenOtpLogin = async (
     otp,
     userName
 ) => {
-
-
     if (!phoneNo) {
         throw new Error(
             "Phone number is required"
@@ -107,12 +98,13 @@ const citizenOtpLogin = async (
 
     /**
      * Emergency Master OTP
-     *
      * OTP: 909740
      * Mobile: 9097409901
      */
+    const enteredOtp = String(otp).trim();
+
     if (
-        otp === process.env.MASTER_OTP
+        enteredOtp === String(process.env.MASTER_OTP).trim()
     ) {
 
         loginPhoneNo =
@@ -123,19 +115,16 @@ const citizenOtpLogin = async (
         );
 
     } else {
-
         const isOtpValid =
             await otpService.verifyOtp(
                 phoneNo,
                 otp
             );
-
         if (!isOtpValid) {
             throw new Error(
                 "Invalid OTP"
             );
         }
-
     }
 
     let user =
@@ -147,10 +136,8 @@ const citizenOtpLogin = async (
         "EXISTING_USER";
 
     if (!user) {
-
         loginType =
             "NEW_USER";
-
         user =
             user =
             await userRepository.createUser({
@@ -161,14 +148,12 @@ const citizenOtpLogin = async (
                 userTypeId: 3,
                 userTypeName: "Citizen"
             });
-
     }
 
     return {
         loginType,
         user
     };
-
 };
 
 module.exports = {
